@@ -16,5 +16,9 @@
   "bugs": {
     "url": "https://github.com/WataruKay/ReactStarterKit/issues"
   },
-  "homepage": "https://github.com/WataruKay/ReactStarterKit#readme"
+  "homepage": "https://github.com/WataruKay/ReactStarterKit#readme",
+  "dependencies": {
+    "babel-loader": "^6.2.4",
+    "webpack": "^1.13.1"
+  }
 }
