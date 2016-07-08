@@ -4,7 +4,9 @@
   "description": "React Starter Kit with webpack",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile": "webpack",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -18,7 +20,14 @@
   },
   "homepage": "https://github.com/WataruKay/ReactStarterKit#readme",
   "dependencies": {
+    "babel-core": "^6.10.4",
     "babel-loader": "^6.2.4",
-    "webpack": "^1.13.1"
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-react": "^6.11.1",
+    "express": "^4.14.0",
+    "react": "^15.2.0",
+    "react-dom": "^15.2.0",
+    "webpack": "^1.13.1",
+    "webpack-dev-middleware": "^1.6.1"
   }
 }
