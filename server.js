@@ -36,6 +36,13 @@ app.use(webpackDevMiddleware(compiler, {
 }));
 
 io.on('connection', socket => {
+
+  socket.on('userConnect', user => {
+    socket.broadcast.emit('userConnect', {
+      name:user.name
+    })
+  })
+
   socket.on('message', message => {
     var from;
     //message.from !== '' ? from = message.from : from = socket.id.slice(8)

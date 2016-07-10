@@ -7,7 +7,8 @@ class Chat extends React.Component {
     this.state = {
       messages:[],
       userName:'',
-      color:'green'
+      color:'green',
+      connectedUsers:[]
     }
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleUserSubmit = this.handleUserSubmit.bind(this)
@@ -15,9 +16,19 @@ class Chat extends React.Component {
   }
 
   componentDidMount () {
-    var that = this;
+    var that = this
     this.socket = io('/')
+    var user = {name:this.state.userName}
+    this.socket.emit('userConnect', user)
+
+    this.socket.on('userConnect', user => {
+      console.log(user.name)
+      //this.state.connectedUsers.push(user)
+      this.setState({ connectedUsers: [user, ...this.state.connectedUsers] })
+      console.log(this.state.connectedUsers)
+    })
     this.socket.on('message', message => {
+      //console.log(message)
       this.setState({ messages: [message, ...this.state.messages] })
     })
 
