@@ -22,14 +22,37 @@ class Chat extends React.Component {
     this.socket.emit('userConnect', user)
 
     this.socket.on('userConnect', user => {
+      console.log(user.defaultName)
       console.log(user.name)
+      var notificationName
+
+      if (user.name == '') {
+        notificationName = user.defaultName
+      } else notificationName = user.name
       //this.state.connectedUsers.push(user)
       this.setState({ connectedUsers: [user, ...this.state.connectedUsers] })
+      Materialize.toast('User: '+notificationName+' connected', 4000, 'teal lighten-2')
       console.log(this.state.connectedUsers)
     })
+
     this.socket.on('message', message => {
       //console.log(message)
       this.setState({ messages: [message, ...this.state.messages] })
+    })
+
+    this.socket.on('changed name', user => {
+      this.state.connectedUsers.map((userList) => {
+        if (userList.defaultName === user.originalName) {
+          userList.name = user.name
+        }
+      })
+      this.setState({connectedUsers: [...this.state.connectedUsers]})
+
+      Materialize.toast(user.originalName+' changed name to: '+user.name, 4000, 'teal lighten-2')
+    })
+
+    this.socket.on('user disconnected', user => {
+      Materialize.toast('User: '+user.id+' disconnected', 4000, 'teal lighten-2')
     })
 
     $(document).ready(function() {
@@ -71,7 +94,8 @@ class Chat extends React.Component {
     //console.log(event)
     //console.log(event.target.value)
     if (name) {
-      this.setState({userName: name})
+      this.setState({userName: name})  // if user changes name set it as state, and emit to socket.io
+      this.socket.emit('changed name', name)
     }
   }
 

@@ -38,8 +38,13 @@ app.use(webpackDevMiddleware(compiler, {
 io.on('connection', socket => {
 
   socket.on('userConnect', user => {
+
+    var socketid = socket.id.slice(8)
+    socket.username = socketid // store some data about user on socket object
+
     socket.broadcast.emit('userConnect', {
-      name:user.name
+      name: user.name,
+      defaultName: socketid
     })
   })
 
@@ -57,6 +62,22 @@ io.on('connection', socket => {
       date: message.date
     })
   })
+
+  socket.on('changed name', name => {
+    socket.changedUserName = name
+    var nameInfo = {
+      name: name,
+      originalName: socket.username
+    }
+    socket.broadcast.emit('changed name', nameInfo)
+  })
+
+  socket.on('disconnect', () => {
+     io.emit('user disconnected', {
+       id: socket.changedUserName ? socket.changedUserName : socket.username
+     });
+   });
+
 })
 
 server.listen(3000);
