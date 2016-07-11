@@ -1,16 +1,17 @@
-const express = require('express');
-const http = require('http');
-const webpackDevMiddleware = require('webpack-dev-middleware');
-const webpack = require('webpack');
-const webpackConfig = require('./webpack.config.js');
-const socketIo = require('socket.io');
+const express = require('express')
+const http = require('http')
+const webpackDevMiddleware = require('webpack-dev-middleware')
+const webpack = require('webpack')
+const webpackConfig = require('./webpack.config.js')
+const socketIo = require('socket.io')
 
-const app = express();
-const server = http.createServer(app);
-const io = socketIo(server);
-const compiler = webpack(webpackConfig);
+const app = express()
+const server = http.createServer(app)
+const io = socketIo(server)
+const compiler = webpack(webpackConfig)
+const connectedUsers = []
 
-app.use(express.static(__dirname + '/www'));
+app.use(express.static(__dirname + '/www'))
 
 app.use(webpackDevMiddleware(compiler, {
   hot: true,
@@ -36,15 +37,14 @@ app.use(webpackDevMiddleware(compiler, {
 }));
 
 io.on('connection', socket => {
-
   socket.on('userConnect', user => {
-
     var socketid = socket.id.slice(8)
     socket.username = socketid // store some data about user on socket object
-
-    socket.broadcast.emit('userConnect', {
+    connectedUsers.push(socket.username) // store connected user into server side
+    io.emit('userConnect', {
       name: user.name,
-      defaultName: socketid
+      defaultName: socketid,
+      serverSideList: connectedUsers
     })
   })
 
@@ -64,17 +64,27 @@ io.on('connection', socket => {
   })
 
   socket.on('changed name', name => {
-    socket.changedUserName = name
+    // check if socket.username 'default id' exists on server side list
+    // if it does, that means this user has not changed their name yet, so splice it out, and update with passed in name
+    var nameChangeFlag = connectedUsers.indexOf(socket.username)
+    if ( nameChangeFlag !== -1) {
+      connectedUsers.splice(connectedUsers.indexOf(socket.username),1,name)
+    }
+
     var nameInfo = {
       name: name,
-      originalName: socket.username
+      originalName: socket.username,
+      serverSideList: connectedUsers
     }
-    socket.broadcast.emit('changed name', nameInfo)
+    io.emit('changed name', nameInfo)
   })
 
   socket.on('disconnect', () => {
+      // remove the disconnected user from server side list of users
+      connectedUsers.splice(connectedUsers.indexOf(socket.username),1)
      io.emit('user disconnected', {
-       id: socket.changedUserName ? socket.changedUserName : socket.username
+       id: socket.changedUserName ? socket.changedUserName : socket.username,
+       serverSideList: connectedUsers
      });
    });
 

@@ -22,38 +22,49 @@ class Chat extends React.Component {
     this.socket.emit('userConnect', user)
 
     this.socket.on('userConnect', user => {
-      console.log(user.defaultName)
-      console.log(user.name)
+      // console.log('a user has connected')
       var notificationName
-
+      // console.log(user.serverSideList)
       if (user.name == '') {
         notificationName = user.defaultName
       } else notificationName = user.name
       //this.state.connectedUsers.push(user)
-      this.setState({ connectedUsers: [user, ...this.state.connectedUsers] })
+
+      // this.setState({ connectedUsers: [user, ...this.state.connectedUsers] })
+      this.setState({connectedUsers: user.serverSideList})
       Materialize.toast('User: '+notificationName+' connected', 4000, 'teal lighten-2')
-      console.log(this.state.connectedUsers)
+
     })
 
     this.socket.on('message', message => {
-      //console.log(message)
       this.setState({ messages: [message, ...this.state.messages] })
     })
 
     this.socket.on('changed name', user => {
-      this.state.connectedUsers.map((userList) => {
-        if (userList.defaultName === user.originalName) {
-          userList.name = user.name
-        }
-      })
-      this.setState({connectedUsers: [...this.state.connectedUsers]})
+      console.log(user.serverSideList)
+      // var updatedUsers = this.state.connectedUsers.map((userList) => { // go through local list of users
+      //   if (userList.defaultName === user.originalName) { // if the socket.id matches, update the new name sent via the event
+      //     return userList.name = user.name // set client side name of that user as what was sent from 'changed name' event from server
+      //   } else return userList.defaultName
+      // })
 
+      console.log('updated users: '+user.serverSideList)
+      this.setState({connectedUsers: user.serverSideList}) // update client side list of users with new name
+      //this.socket.emit('changed name', user)
       Materialize.toast(user.originalName+' changed name to: '+user.name, 4000, 'teal lighten-2')
     })
 
     this.socket.on('user disconnected', user => {
+      // console.log(user.serverSideList)
+      this.setState({connectedUsers: user.serverSideList })
       Materialize.toast('User: '+user.id+' disconnected', 4000, 'teal lighten-2')
     })
+
+    // var listOfConnectedUsers = this.socket.sockets.map(function(e) {
+    //   return e.username;
+    // })
+
+    console.log(this.socket)
 
     $(document).ready(function() {
         $('select').material_select();
@@ -91,8 +102,6 @@ class Chat extends React.Component {
 
   handleBlur(event) {
     const name = event.target.value
-    //console.log(event)
-    //console.log(event.target.value)
     if (name) {
       this.setState({userName: name})  // if user changes name set it as state, and emit to socket.io
       this.socket.emit('changed name', name)
@@ -102,6 +111,15 @@ class Chat extends React.Component {
   render () {
     const messages = this.state.messages.map((message, index) => {
       return <ul key={index}><li className='card-panel teal lighten-5' key={index} style={{color:this.state.color, 'fontFamily': "Comic Sans MS"}}> {message.date} <b>{message.from}: </b>{message.body}</li></ul>
+    });
+
+    const connectedUsersData = this.state.connectedUsers.map((user, index) => {
+      return  <ul key={index}>
+                <li className="chip" key={index} style={{color:this.state.color, 'fontFamily': "Comic Sans MS"}}>
+                <img src="http://memesvault.com/wp-content/uploads/Happy-Sad-Frog-20.jpg" width="30px"></img>
+                  {user}
+                </li>
+              </ul>
     });
 
     return(
@@ -115,9 +133,9 @@ class Chat extends React.Component {
           </div>
           <div className="container">
             <div className="row">
-              <h3 style={{fontSize:50}}>
+              <h3 style={{fontSize:50, textAlign:'center'}}>
                 <img src="http://memesvault.com/wp-content/uploads/Happy-Sad-Frog-20.jpg" width="100px"></img>
-                I'm a sad pepe, please talk to me
+                I am a sad pepe, please talk to me
               </h3>
 
               <div className="input-field col s6">
@@ -140,6 +158,10 @@ class Chat extends React.Component {
                 <i className="material-icons prefix">chat</i>
                 <input id='textArea' type='text' placeholder='input a message...' onKeyUp={this.handleSubmit} style={{color:this.state.color}} />
                 <label htmlFor="textArea">Message</label>
+              </div>
+              <div className='card-panel col s4 offset-s4 teal lighten-5' style={{textAlign:'center'}}>
+              <span style={{display: 'inline-block'}}> Currently connected pepes </span>
+                {connectedUsersData}
               </div>
             </div>
             {messages}
