@@ -38,10 +38,11 @@ class Chat extends React.Component {
 
     this.socket.on('message', message => {
       this.setState({ messages: [message, ...this.state.messages] })
+
     })
 
     this.socket.on('changed name', user => {
-      console.log(user.serverSideList)
+      // console.log(user.serverSideList)
       // var updatedUsers = this.state.connectedUsers.map((userList) => { // go through local list of users
       //   if (userList.defaultName === user.originalName) { // if the socket.id matches, update the new name sent via the event
       //     return userList.name = user.name // set client side name of that user as what was sent from 'changed name' event from server
@@ -110,7 +111,12 @@ class Chat extends React.Component {
 
   render () {
     const messages = this.state.messages.map((message, index) => {
-      return <ul key={index}><li className='card-panel teal lighten-5' key={index} style={{color:this.state.color, 'fontFamily': "Comic Sans MS"}}> {message.date} <b>{message.from}: </b>{message.body}</li></ul>
+      if(message.from === this.state.userName || message.from === 'Me') {
+          return <li className='card-panel teal lighten-5' key={index} style={{color:this.state.color, 'fontFamily': "Comic Sans MS"}}> {message.date} <b>{message.from}: </b>{message.body}</li>
+      } else {
+        return <li className='card-panel teal lighten-5' key={index} style={{color:'green', 'fontFamily': "Comic Sans MS"}}> {message.date} <b>{message.from}: </b>{message.body}</li>
+      }
+
     });
 
     const connectedUsersData = this.state.connectedUsers.map((user, index) => {
@@ -160,12 +166,15 @@ class Chat extends React.Component {
                 <label htmlFor="textArea">Message</label>
               </div>
               <div className='card-panel col s4 offset-s4 teal lighten-5' style={{textAlign:'center'}}>
-              <span style={{display: 'inline-block'}}> Currently connected pepes </span>
+                <span style={{display: 'inline-block'}}> Currently connected pepes </span>
                 {connectedUsersData}
               </div>
             </div>
-            {messages}
-          </div>
+            <ul>
+              {messages}
+            </ul>
+            </div>
+            <audio id='messageSound' src="./Airhorn.mp3" preload="auto"></audio>
         </div>
     )
   }

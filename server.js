@@ -64,6 +64,7 @@ io.on('connection', socket => {
   })
 
   socket.on('changed name', name => {
+    socket.changedName = name
     // check if socket.username 'default id' exists on server side list
     // if it does, that means this user has not changed their name yet, so splice it out, and update with passed in name
     var nameChangeFlag = connectedUsers.indexOf(socket.username)
@@ -81,9 +82,14 @@ io.on('connection', socket => {
 
   socket.on('disconnect', () => {
       // remove the disconnected user from server side list of users
-      connectedUsers.splice(connectedUsers.indexOf(socket.username),1)
+      if (socket.changedName) {
+        connectedUsers.splice(connectedUsers.indexOf(socket.changedName),1)
+      } else {
+        connectedUsers.splice(connectedUsers.indexOf(socket.username),1)
+      }
+
      io.emit('user disconnected', {
-       id: socket.changedUserName ? socket.changedUserName : socket.username,
+       id: socket.changedName ? socket.changedName : socket.username,
        serverSideList: connectedUsers
      });
    });
