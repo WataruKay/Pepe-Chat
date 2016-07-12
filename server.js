@@ -33,14 +33,19 @@ app.use(webpackDevMiddleware(compiler, {
     warnings: false,
     publicPath: false
   },
+  log: console.log,
   historyApiFallback: true,
 }));
+
+io.connectedUsers = []
 
 io.on('connection', socket => {
   socket.on('userConnect', user => {
     var socketid = socket.id.slice(8)
     socket.username = socketid // store some data about user on socket object
+    console.log('before user connect: '+connectedUsers)
     connectedUsers.push(socket.username) // store connected user into server side
+    console.log('after user connect: '+connectedUsers)
     io.emit('userConnect', {
       name: user.name,
       defaultName: socketid,
@@ -70,6 +75,7 @@ io.on('connection', socket => {
     var nameChangeFlag = connectedUsers.indexOf(socket.username)
     if ( nameChangeFlag !== -1) {
       connectedUsers.splice(connectedUsers.indexOf(socket.username),1,name)
+      console.log('user changed name: '+connectedUsers)
     }
 
     var nameInfo = {
@@ -84,8 +90,10 @@ io.on('connection', socket => {
       // remove the disconnected user from server side list of users
       if (socket.changedName) {
         connectedUsers.splice(connectedUsers.indexOf(socket.changedName),1)
+        console.log('user with changed name disconnected: '+connectedUsers)
       } else {
         connectedUsers.splice(connectedUsers.indexOf(socket.username),1)
+        console.log('user with un-changed name disconnected: '+connectedUsers)
       }
 
      io.emit('user disconnected', {
@@ -96,4 +104,4 @@ io.on('connection', socket => {
 
 })
 
-server.listen(3000);
+server.listen(3000, () => console.log('server is listening to port 3000'));
