@@ -1,5 +1,14 @@
-Chat app built with React Starter Kit with webpack
+Pepe Chat
+======================
 
-uses:
+Chat app built with React Starter Kit + socket.io
 
-React, socket.io, node.js, express, materializecss
+Tools used
+------
+
++ React
++ socket.io
++ node.js
++ express
++ materializecss
++ webpack
