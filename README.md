@@ -6,9 +6,9 @@ Chat app built with React Starter Kit + socket.io
 Tools used
 ------
 
-+ 'React' :
-+ 'socket.io' : 
-+ 'node.js' :
-+ 'express' :
-+ 'materializecss' :
-+ 'webpack' :
++ React
++ socket.io
++ node.js
++ express
++ materializecss
++ webpack
