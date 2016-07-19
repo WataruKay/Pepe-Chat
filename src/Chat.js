@@ -8,7 +8,8 @@ class Chat extends React.Component {
       messages:[],
       userName:'',
       color:'green',
-      connectedUsers:[]
+      connectedUsers:[],
+      socketid:''
     }
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleUserSubmit = this.handleUserSubmit.bind(this)
@@ -29,7 +30,7 @@ class Chat extends React.Component {
         notificationName = user.defaultName
       } else notificationName = user.name
       //this.state.connectedUsers.push(user)
-
+      this.setState({socketid: user.defaultName})
       // this.setState({ connectedUsers: [user, ...this.state.connectedUsers] })
       this.setState({connectedUsers: user.serverSideList})
       Materialize.toast('User: '+notificationName+' connected', 4000, 'teal lighten-2')
@@ -120,12 +121,23 @@ class Chat extends React.Component {
     });
 
     const connectedUsersData = this.state.connectedUsers.map((user, index) => {
-      return  <ul key={index}>
-                <li className="chip" key={index} style={{color:this.state.color, 'fontFamily': "Comic Sans MS"}}>
-                <img src="http://memesvault.com/wp-content/uploads/Happy-Sad-Frog-20.jpg" width="30px"></img>
-                  {user}
-                </li>
-              </ul>
+      if (user === this.state.userName || user === this.state.socketid) {
+        return (
+          <ul key={index}>
+            <li className="chip" key={index} style={{color:this.state.color, 'fontFamily': "Comic Sans MS"}}>
+              <img src="http://memesvault.com/wp-content/uploads/Happy-Sad-Frog-20.jpg" width="30px"></img>
+              {user}
+            </li>
+          </ul>
+      )} else {
+        return (
+          <ul key={index}>
+            <li className="chip" key={index} style={{color: 'green', 'fontFamily': "Comic Sans MS"}}>
+              <img src="http://memesvault.com/wp-content/uploads/Happy-Sad-Frog-20.jpg" width="30px"></img>
+              {user}
+            </li>
+          </ul>
+      )}
     });
 
     return(
