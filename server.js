@@ -90,10 +90,10 @@ io.on('connection', socket => {
       // remove the disconnected user from server side list of users
       if (socket.changedName) {
         connectedUsers.splice(connectedUsers.indexOf(socket.changedName),1)
-        console.log('user with changed name disconnected: '+connectedUsers)
+        console.log('user with changed name disconnected: '+socket.changedName)
       } else {
         connectedUsers.splice(connectedUsers.indexOf(socket.username),1)
-        console.log('user with un-changed name disconnected: '+connectedUsers)
+        console.log('user with un-changed name disconnected: '+socket.id.slice(8))
       }
 
      io.emit('user disconnected', {
