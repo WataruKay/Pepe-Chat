@@ -39,7 +39,9 @@ class Chat extends React.Component {
 
     this.socket.on('message', message => {
       this.setState({ messages: [message, ...this.state.messages] })
-
+      console.log(message+' recieved')
+      const alertSound2 = document.getElementById("alertSound")
+      alertSound2.play()
     })
 
     this.socket.on('changed name', user => {
@@ -62,18 +64,15 @@ class Chat extends React.Component {
       Materialize.toast('User: '+user.id+' disconnected', 4000, 'teal lighten-2')
     })
 
-    // var listOfConnectedUsers = this.socket.sockets.map(function(e) {
-    //   return e.username;
-    // })
-
-    console.log(this.socket)
-
     $(document).ready(function() {
         $('select').material_select();
         $("#colorSelector").on('change', function(event) {
               var color = event.target.value
               that.setState({'color': color})
           })
+        // set volume of alertSound to 0.1 on document.ready (volume prop is not supported in React)
+        const alertSound = document.getElementById("alertSound");
+        alertSound.setAttribute("volume", "0.1");
       })
   }
 
@@ -185,8 +184,8 @@ class Chat extends React.Component {
             <ul>
               {messages}
             </ul>
-            </div>
-            <audio id='messageSound' src="./Airhorn.mp3" preload="auto"></audio>
+          </div>
+          <audio id='alertSound' src="./Airhorn.mp3" preload="auto"></audio>
         </div>
     )
   }
