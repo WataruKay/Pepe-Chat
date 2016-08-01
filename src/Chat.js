@@ -53,8 +53,8 @@ class Chat extends React.Component {
       // })
 
       console.log('updated users: '+user.serverSideList)
-      this.setState({connectedUsers: user.serverSideList}) // update client side list of users with new name
-      //this.socket.emit('changed name', user)
+      this.setState({connectedUsers: user.serverSideList}) // update client side list of users with new
+      // test commit 2
       Materialize.toast(user.originalName+' changed name to: '+user.name, 4000, 'teal lighten-2')
     })
 
