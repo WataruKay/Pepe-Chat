@@ -41,7 +41,7 @@ class Chat extends React.Component {
       this.setState({ messages: [message, ...this.state.messages] })
       console.log(message+' recieved')
       const alertSound2 = document.getElementById("alertSound")
-      alertSound2.play()
+      // alertSound2.play() 
     })
 
     this.socket.on('changed name', user => {
